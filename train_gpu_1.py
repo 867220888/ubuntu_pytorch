@@ -57,7 +57,8 @@ if torch.cuda.is_available():
 
 # 定义损失函数
 loss_fn = nn.CrossEntropyLoss()
-loss_fn = loss_fn.cuda()
+if torch.cuda.is_available():
+    loss_fn = loss_fn.cuda()
 
 # 定义优化器
 learning_rate = 1e-2
@@ -80,8 +81,9 @@ for i in range(epoch):
     # 训练
     for data in train_dataloader:
         imgs, targets = data
-        imgs = imgs.cuda()
-        targets = targets.cuda()
+        if torch.cuda.is_available():
+            imgs = imgs.cuda()
+            targets = targets.cuda()
         outputs = tudui(imgs)
         # 计算损失
         loss = loss_fn(outputs, targets)
@@ -103,8 +105,9 @@ for i in range(epoch):
         # 测试
         for data in test_dataloader:
             imgs, targets = data
-            imgs = imgs.cuda()
-            targets = targets.cuda()
+            if torch.cuda.is_available():
+                imgs = imgs.cuda()
+                targets = targets.cuda()
             outputs = tudui(imgs)
             loss = loss_fn(outputs, targets)
             total_test_loss += loss.item()
