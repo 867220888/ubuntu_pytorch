@@ -5,7 +5,7 @@ from torch import nn
 from torch.utils.data import DataLoader
 from torch.utils.tensorboard import SummaryWriter
 
-
+device = torch.device("cpu")
 # 准备数据集
 train_data = torchvision.datasets.CIFAR10(root='./data', train=True, download=True,
                                           transform=torchvision.transforms.ToTensor())
@@ -53,14 +53,10 @@ if __name__ == '__main__':
 
 # 创建网络模型
 tudui = Tudui()
-if torch.cuda.is_available():
-    tudui = tudui.cuda()
-
+tudui = tudui.to(device)
 # 定义损失函数
 loss_fn = nn.CrossEntropyLoss()
-if torch.cuda.is_available():
-    loss_fn = loss_fn.cuda()
-
+loss_fn = loss_fn.to(device)
 # 定义优化器
 learning_rate = 1e-2
 optimizer = torch.optim.SGD(tudui.parameters(), lr=learning_rate)
@@ -83,9 +79,8 @@ for i in range(epoch):
     # 训练
     for data in train_dataloader:
         imgs, targets = data
-        if torch.cuda.is_available():
-            imgs = imgs.cuda()
-            targets = targets.cuda()
+        imgs = imgs.to(device)
+        targets = targets.to(device)
         outputs = tudui(imgs)
         # 计算损失
         loss = loss_fn(outputs, targets)
@@ -109,9 +104,8 @@ for i in range(epoch):
         # 测试
         for data in test_dataloader:
             imgs, targets = data
-            if torch.cuda.is_available():
-                imgs = imgs.cuda()
-                targets = targets.cuda()
+            imgs = imgs.to(device)
+            targets = targets.to(device)
             outputs = tudui(imgs)
             loss = loss_fn(outputs, targets)
             total_test_loss += loss.item()
