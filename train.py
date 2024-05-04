@@ -64,6 +64,7 @@ for i in range(epoch):
             writer.add_scalar('train_loss', loss.item(), total_train_step)
 
     total_test_loss = 0
+    total_accuracy = 0
     with torch.no_grad():
         # 测试
         for data in test_dataloader:
@@ -71,8 +72,13 @@ for i in range(epoch):
             outputs = tudui(imgs)
             loss = loss_fn(outputs, targets)
             total_test_loss += loss.item()
+            accuracy = (outputs.argmax(1) == targets).sum()
+            total_accuracy += accuracy
+
     print("整体测试集训练的损失为：{}".format(total_test_loss))
+    print("整体测试集的准确率为：{}".format(total_accuracy / test_data_size))
     writer.add_scalar('test_loss', total_test_loss, total_test_step)
+    writer.add_scalar('test_accuracy', total_accuracy / test_data_size, total_test_step)
     total_test_step += 1
 
     torch.save(tudui, './tudui_{}.pth'.format(i))
